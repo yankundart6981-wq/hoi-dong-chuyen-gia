@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#07121c">
+  <title>Hội đồng chuyên gia</title>
+  <link rel="icon" href="/brand/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand-logo brand-round" src="/brand/logo.png" alt="Logo">
+      <span class="brand-rule" aria-hidden="true"></span>
+      <span class="brand-name">Hội đồng chuyên gia</span>
+    </div>
+    <ol class="stepper" id="stepper" aria-label="Tiến trình hội đồng">
+      <li data-step="setup">Đề bài</li>
+      <li data-step="round1">Mở đầu</li>
+      <li data-step="cruxes">Điểm vênh</li>
+      <li data-step="round2">Tranh luận</li>
+      <li data-step="round3">Bỏ phiếu</li>
+      <li data-step="verdict">Kết luận</li>
+    </ol>
+    <div class="top-actions">
+      <span class="usage" id="usage" title="Số token app đã dùng từ lúc bật"></span>
+      <button class="ghost" id="historyBtn" type="button">Phiên cũ</button>
+      <button class="ghost" id="newBtn" type="button" hidden>Câu hỏi mới</button>
+    </div>
+  </header>
+
+  <div class="topic" id="topic" hidden>
+    <div class="topic-main">
+      <div class="label">Đang bàn</div>
+      <h1 id="topicTitle"></h1>
+    </div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <main class="layout">
+    <section class="stage-wrap" aria-label="Bàn hội đồng">
+      <div class="stage" id="stage">
+        <div class="wall" aria-hidden="true"></div>
+        <div class="spot" id="spot" aria-hidden="true"></div>
+        <div id="seats"></div>
+        <div class="table" id="table" aria-hidden="true"><img class="etch" src="/brand/logo.png" alt=""></div>
+        <div id="plates"></div>
+        <svg class="links" id="links" aria-hidden="true"></svg>
+
+        <div class="center" id="center">
+          <div class="waiting" id="waiting" hidden>
+            <span class="pulse"><i></i>Phòng đã mở</span>
+            <h2 data-type>Mang một quyết định đến Hội đồng chuyên gia</h2>
+            <p>Trong Claude Code, gõ dòng bên dưới kèm quyết định của bạn. Hội đồng sẽ hiện ở đây và tranh luận trực tiếp.</p>
+            <code>/roast-room tôi có nên ...</code>
+            <div class="row"><button class="ghost" type="button" id="waitHistory">Xem lại một hội đồng cũ</button></div>
+          </div>
+
+          <form class="composer" id="composer" hidden novalidate>
+            <h2 data-type>Bạn muốn hỏi hội đồng điều gì?</h2>
+            <textarea id="prompt" rows="3" placeholder="Một con số cần tra, hoặc một quyết định cần bàn: các phương án, vài con số, bạn đang nghiêng về hướng nào." required minlength="5"></textarea>
+            <div class="samples" id="samples"></div>
+            <div class="composer-row">
+              <button class="convene" type="submit" id="ask">Gửi câu hỏi</button>
+            </div>
+          </form>
+
+          <div class="hoi" id="hoi" hidden aria-live="polite"></div>
+
+          <div class="caption" id="caption" hidden>
+            <div class="cap-head">
+              <span class="cap-av" id="capAv"></span>
+              <span class="cap-who" id="capWho"></span>
+              <span class="cap-tag" id="capTag"></span>
+            </div>
+            <p class="cap-text" id="capText"></p>
+            <div class="cap-sub" id="capSub"></div>
+          </div>
+
+          <div class="waitcard" id="waitcard" hidden aria-live="polite">
+            <div class="wc-top"><span class="wc-step" id="wcStep"></span><span class="wc-time" id="wcTime"></span></div>
+            <p class="wc-head" id="wcHead"></p>
+            <p class="wc-sub" id="wcSub"></p>
+            <p class="wc-muse" id="wcMuse"></p>
+            <div class="wc-bar"><i id="wcBar"></i></div>
+            <p class="wc-nudge" id="wcNudge" hidden>Lâu rồi không thấy gì mới? Xem lại Claude Code, có thể nó đang chờ bạn trả lời hoặc duyệt.</p>
+          </div>
+
+          <div class="cruxes" id="cruxes" hidden></div>
+          <div class="plate" id="plate" hidden></div>
+        </div>
+
+        <div class="playbar" id="playbar" hidden>
+          <span class="queue" id="queueInfo"></span>
+          <div class="speed" role="radiogroup" aria-label="Tốc độ phát">
+            <button type="button" data-speed="1" aria-pressed="true">1x</button>
+            <button type="button" data-speed="1.6" aria-pressed="false">1.6x</button>
+            <button type="button" data-speed="2.5" aria-pressed="false">2.5x</button>
+          </div>
+          <button type="button" class="skip" id="skipBtn">Tua nhanh</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Ý chính">
+      <div class="panel-head" id="panelHead">Ý chính</div>
+      <div class="tabpanel" id="feed">
+        <div class="empty">Mỗi ghế một dòng khi hội đồng lên tiếng. Bấm vào một ghế để đọc thẻ đầy đủ.</div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="sheet" id="verdictSheet" hidden>
+    <div class="sheet-inner" id="verdictBody"></div>
+  </div>
+
+  <dialog id="cardDialog" class="card-dialog">
+    <div id="cardBody"></div>
+    <form method="dialog"><button class="ghost">Đóng</button></form>
+  </dialog>
+
+  <dialog id="historyDialog" class="card-dialog">
+    <h3>Phiên cũ</h3>
+    <p class="muted">Phát lại một hội đồng đúng như lúc diễn ra.</p>
+    <ul class="history" id="historyList"></ul>
+    <form method="dialog"><button class="ghost">Đóng</button></form>
+  </dialog>
+
+  <div class="toast" id="toast" hidden></div>
+  <p class="disclaimer">Các cố vấn là mô phỏng, dựng từ tác phẩm công khai của từng người và vẽ theo lối biếm hoạ. Họ không phải người thật và không phát ngôn thay những người đó.</p>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

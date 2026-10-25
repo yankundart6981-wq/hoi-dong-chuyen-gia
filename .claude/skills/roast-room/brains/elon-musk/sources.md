@@ -1,0 +1,103 @@
+# Sources: Elon Musk
+
+97 sources (7 web, 90 video), 1,072,305 words. Video dates are upload dates. Every quote in this brain carries one of these ids.
+
+Format: id | title | url | date | words
+
+- S001 | Transcript for Elon Musk: War, AI, Aliens, Politics, Physics, Video Games, and Humanity / Lex Fridman Podcast #400 - Lex Fridman | https://lexfridman.com/elon-musk-4-transcript/ | 2023-11-10 | 20732
+- S002 | Elon Musk: "In 36 months, the cheapest place to put AI will be space” | https://www.dwarkesh.com/p/elon-musk | 2026-02-05 | 24072
+- S003 | Elon Musk and Kevin Rose | https://www.youtube.com/watch?v=L-s_3b5fRd8 | 2012-09-07 | 5033
+- S004 | Elon Musk: Neuralink, AI, Autopilot, and the Pale Blue Dot / Lex Fridman Podcast #49 | https://www.youtube.com/watch?v=smK9dgdTl40 | 2019-11-12 | 5523
+- S005 | Elon Musk: Tesla Autopilot / Lex Fridman Podcast #18 | https://www.youtube.com/watch?v=dEv99vxKjVI | 2019-04-12 | 4785
+- S006 | Elon Musk: SpaceX, Mars, Tesla Autopilot, Self-Driving, Robotics, and AI / Lex Fridman Podcast #252 | https://www.youtube.com/watch?v=DxREm3s1scA | 2021-12-28 | 22345
+- S007 | Joe Rogan Experience #1470 - Elon Musk | https://www.youtube.com/watch?v=RcYjXbSJBN8 | 2020-05-07 | 20434
+- S008 | Joe Rogan Experience #1609 - Elon Musk | https://www.youtube.com/watch?v=Gbb2rV7Vpnw | 2024-06-27 | 35597
+- S009 | Starbase Tour with Elon Musk [PART 2 // Summer 2021] | https://www.youtube.com/watch?v=SA8ZBJWo73E | 2021-08-07 | 10368
+- S010 | Go up SpaceX's Starship-catching robotic launch tower with Elon Musk! | https://www.youtube.com/watch?v=XP5k3ZzPf_0 | 2022-05-26 | 4293
+- S011 | First Look Inside SpaceX's Starfactory w/ Elon Musk | https://www.youtube.com/watch?v=aFqjoCbZ4ik | 2024-06-22 | 11537
+- S012 | Joe Rogan Experience #2404 - Elon Musk | https://www.youtube.com/watch?v=O4wBUysNe2k | 2025-10-31 | 35837
+- S013 | The full-length interview with Elon Musk / The Economist | https://www.youtube.com/watch?v=XuoqKYxDHVc | 2026-07-29 | 15415
+- S014 | Starbase Tour with Elon Musk [PART 1 // Summer 2021] | https://www.youtube.com/watch?v=t705r8ICkRw | 2021-08-03 | 8223
+- S015 | Elon Musk / All-In Summit 2024 | https://www.youtube.com/watch?v=pSFvOUswFwA | 2024-09-09 | 10893
+- S016 | Elon Musk on DOGE, Optimus, Starlink Smartphones, Evolving with AI, Why the West is Imploding | https://www.youtube.com/watch?v=qeZqZBRA-6Q | 2025-09-09 | 7201
+- S017 | Elon Musk: Twitter's bot problem, SpaceX's grand plan, Tesla stories & more | https://www.youtube.com/watch?v=CnxzrX9tNoc | 2022-05-16 | 15222
+- S018 | Elon Musk & Gwynne Shotwell on AI Risks and Peer Review, Starship, Terafab, SpaceX/Tesla Merger | https://www.youtube.com/watch?v=iwBOQeFPAwg | 2026-09-14 | 12148
+- S019 | Elon Musk: OpenAI Betrayal, His Future at Tesla, and the Next Big Thing: Grokipedia | https://www.youtube.com/watch?v=j6_VfR-CyuM | 2025-10-31 | 17136
+- S020 | Elon Musk: A Different Conversation w/ Nikhil Kamath / Full Episode / People by WTF Ep. 16 | https://www.youtube.com/watch?v=Rni7Fz7208c | 2025-11-30 | 15174
+- S021 | Elon Musk: Digital Superintelligence, Multiplanetary Life, How to Be Useful | https://www.youtube.com/watch?v=cFIlta1GkiE | 2025-06-19 | 8487
+- S022 | Elon Musk Interview with Sam Altman  (2016.9.15) | https://www.youtube.com/watch?v=q9icMJ48z6U | 2017-05-22 | 3622
+- S023 | Elon Musk and Y Combinator President on Thinking for the Future - FULL CONVERSATION | https://www.youtube.com/watch?v=SqEo107j-uw | 2015-10-08 | 8981
+- S024 | Elon Musk talks Twitter, Tesla and how his brain works: live at TED2022 | https://www.youtube.com/watch?v=cdZZpaB2kDM | 2022-04-14 | 8747
+- S025 | Elon Musk: The future we're building -- and boring / TED | https://www.youtube.com/watch?v=zIwLWfaAg-8 | 2017-05-03 | 6168
+- S026 | FULL: Elon Musk Live from the Qatar Economic Forum / Elon, Inc. | https://www.youtube.com/watch?v=iqd8D48mYhQ | 2025-05-20 | 6791
+- S027 | Elon Musk: A future worth getting excited about / Tesla Texas Gigafactory interview / TED | https://www.youtube.com/watch?v=YRvf00NooN8 | 2022-04-17 | 10357
+- S028 | ELON MUSK: "Birthrate might be the biggest threat to the future of human civilization“ | https://www.youtube.com/watch?v=2WX_mgnAFA0 | 2022-04-15 | 7053
+- S029 | Elon Musk Latest Interview with David Faber. | https://www.youtube.com/watch?v=Pf-smob2k50 | 2023-05-17 | 11130
+- S030 | WSJ: Elon Musk on Humanity + Mutual Prosperity: Wall Street Journal CEO Council Summit: Joanna Stern | https://www.youtube.com/watch?v=Dl5BJt8UTE0 | 2021-12-07 | 6122
+- S031 | ‘Tesla AI Is Actually Very Advanced:’ Elon Musk on AI, China, Twitter and More / WSJ | https://www.youtube.com/watch?v=PDy7s1SDDn4 | 2023-05-23 | 11655
+- S032 | Watch Elon Musk at 2023 Tesla Shareholder Meeting (Full Presentation) | https://www.youtube.com/watch?v=N-_ZBfKXfr0 | 2023-05-16 | 4510
+- S033 | 2025 Annual Shareholder Meeting / Tesla | https://www.youtube.com/watch?v=VGPlvmMjPtE | 2025-11-06 | 17775
+- S034 | Tesla Q1 2025 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=vs4cfyyMWhQ | 2025-04-22 | 13271
+- S035 | Elon Musk on AGI Timeline, US vs China, Job Markets, Clean Energy & Humanoid Robots / 220 | https://www.youtube.com/watch?v=RSNuB9pj9P8 | 2026-01-06 | 31325
+- S036 | Tesla Q3 2026 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=tFezqXBF-gw | 2026-10-21 | 9802
+- S037 | Making Life Multiplanetary | https://www.youtube.com/watch?v=tdUX3ypDVwI | 2017-09-29 | 5410
+- S038 | Elon Musk delivers SpaceX update on Starship, Mars goals and more at Starbase | https://www.youtube.com/watch?v=0nMfW7T3rx4 | 2025-05-29 | 5313
+- S039 | Tesla Q4 and full year 2025 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=oK0UZEE9GPo | 2026-01-28 | 10001
+- S040 | The Secret Tesla Motors Master Plan (just between you and me) / Tesla | https://www.tesla.com/secret-master-plan | 2006-08 | 1322
+- S041 | Master Plan, Part Deux / Tesla | https://www.tesla.com/master-plan-part-deux | 2016-07 | 1704
+- S042 | Making Humans a Multiplanetary Species | https://www.youtube.com/watch?v=H7Uyfqi_TE8 | 2016-09-27 | 8123
+- S043 | Tesla Autonomy Day | https://www.youtube.com/watch?v=Ucp0TTmvqOE | 2019-04-22 | 27512
+- S044 | Tesla Battery Day | https://www.youtube.com/watch?v=l6T9xIeZTds | 2020-09-22 | 20646
+- S045 | Tesla AI Day 2021 | https://www.youtube.com/watch?v=j0z4FweCy4M | 2021-08-19 | 22617
+- S046 | Tesla AI Day 2022 | https://www.youtube.com/watch?v=ODSJsviD_SU | 2022-09-30 | 29893
+- S047 | 2023 Investor Day / Tesla | https://www.youtube.com/watch?v=Hl1zEzVUV7w | 2023-03-01 | 34446
+- S048 | We, Robot / Tesla Cybercab Unveil | https://www.youtube.com/watch?v=6v6dbxPlsXs | 2024-10-10 | 3072
+- S049 | Starship Update | https://www.youtube.com/watch?v=sOpMrVnjYeY | 2019-09-29 | 10351
+- S050 | Starship Update | https://www.youtube.com/watch?v=3N7L8Xhkzqo | 2022-02-10 | 9746
+- S051 | The mind behind Tesla, SpaceX, SolarCity ... / Elon Musk | https://www.youtube.com/watch?v=IgKWPdJWuBQ | 2013-03-19 | 3637
+- S052 | Tesla Annual Shareholders Meeting | https://www.youtube.com/watch?v=Va5i42D13cI | 2019-06-11 | 13814
+- S053 | Tesla, Inc. 2021 Annual Meeting of Stockholders | https://www.youtube.com/watch?v=bH51-loeLgM | 2021-10-07 | 10739
+- S054 | 2022 Annual Shareholder Meeting / Tesla | https://www.youtube.com/watch?v=49e7LrxS3FQ | 2022-08-04 | 9522
+- S055 | 2024 Annual Shareholder Meeting / Tesla | https://www.youtube.com/watch?v=remZ1KMR_Z4 | 2024-06-13 | 20538
+- S056 | Tesla Q4 and full year 2022 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=_Pxfo4rT3f8 | 2023-01-25 | 9522
+- S057 | Tesla Q4 and full year 2023 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=A_2Z-AEtdAg | 2024-01-24 | 9663
+- S058 | Tesla Q1 2024 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=o81Rs-w3YMY | 2024-04-23 | 10945
+- S059 | Tesla Q2 2024 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=ktkCRVxTuEI | 2024-07-23 | 9178
+- S060 | Tesla Q3 2024 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=ScxNmPREZtg | 2024-10-23 | 10908
+- S061 | Tesla Q4 and full year 2024 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=Gub5qCTutZo | 2025-01-29 | 10457
+- S062 | Tesla Q2 2025 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=pLjG7a-NX7U | 2025-07-23 | 8924
+- S063 | Tesla Q3 2025 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=GQ9S7xbkGAY | 2025-10-22 | 10258
+- S064 | Tesla Q1 2026 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=qO7T5zgRvXM | 2026-04-22 | 8748
+- S065 | Tesla Q2 2026 Financial Results and Q&A Webcast | https://www.youtube.com/watch?v=9H5y9Uag8AA | 2026-07-22 | 10320
+- S066 | Elon Musk Interview: 1-on-1 with Sandy Munro | https://www.youtube.com/watch?v=YAtLTLiqNwg | 2021-02-02 | 9489
+- S067 | Elon Musk and Sandy Munro discuss the Cybertruck! | https://www.youtube.com/watch?v=ky1Z2klPalw | 2023-12-05 | 7948
+- S068 | Third Row Tesla Podcast - Episode 14 - Tesla Manufacturing with Sandy Munro and Elon Musk! | https://www.youtube.com/watch?v=pih4kU6yvz8 | 2020-04-14 | 11874
+- S069 | Ron Baron Interviews Elon Musk at the 29th Annual Baron Investment Conference | https://www.youtube.com/watch?v=E-squeb0YJA | 2023-01-04 | 9219
+- S070 | Elon Musk / Full interview / Code Conference 2016 | https://www.youtube.com/watch?v=wsixsRI-Sz4 | 2016-06-02 | 15106
+- S071 | Elon Musk - CEO of Tesla Motors and SpaceX / Entrepreneurship / Khan Academy | https://www.youtube.com/watch?v=vDwzmJpI4io | 2013-04-22 | 8577
+- S072 | Elon Musk on Advertisers, Trust and the “Wild Storm” in His Mind / DealBook Summit 2023 | https://www.youtube.com/watch?v=2BfMuHDfGJI | 2023-11-30 | 16321
+- S073 | Elon Musk on DOGE, AI, & Are we in a Simulation? / KMP Ep.18 | https://www.youtube.com/watch?v=bz5Hjk40FD4 | 2025-12-09 | 8201
+- S074 | FULL Elon Musk Interview with Tucker Carlson FOX News April 2023 (Unedited) | https://www.youtube.com/watch?v=bQ45lsDxL6Q | 2023-04-22 | 14350
+- S075 | Elon Musk on Abundance, AGI, and The Media in 2024 / EP #79 (X Spaces) | https://www.youtube.com/watch?v=_PcL4w--uNs | 2024-01-04 | 11779
+- S076 | Elon Musk, National Governors Association, July 15, 2017 | https://www.youtube.com/watch?v=O4b63Viqqlk | 2021-04-20 | 9987
+- S077 | Elon Musk Answers Your Questions! / SXSW 2018 | https://www.youtube.com/watch?v=kzlUyrccbos | 2018-03-11 | 10165
+- S078 | Mohammad Al Gergawi in a conversation with Elon Musk during WGS17 | https://www.youtube.com/watch?v=rCoFKUJ_8Yo | 2017-02-15 | 4586
+- S079 | A Conversation with Elon Musk 2.0 | https://www.youtube.com/watch?v=2IVQwzFzsBo | 2023-03-03 | 5155
+- S080 | Elon Musk at the MIT AeroAstro Centennial Symposium | https://www.youtube.com/watch?v=4DUbiCQpw_4 | 2015-07-02 | 12362
+- S081 | Elon Musk on How to Save the Human Race at #2024 Milken Conference | https://www.youtube.com/watch?v=s5o5m7LP6YY | 2024-05-07 | 5968
+- S082 | Conversation with Elon Musk / World Economic Forum Annual Meeting 2026 | https://www.youtube.com/watch?v=IgifEgm1-e0 | 2026-01-22 | 5007
+- S083 | Elon Musk and Ian Dahl, SpaceX Vision Update, June 8, 2026 | https://www.youtube.com/watch?v=VvjV0gzi5Zg | 2026-06-09 | 5237
+- S084 | ELON MUSK INTERVIEW: X Takeover 2026, What's next for Humanity. | https://www.youtube.com/watch?v=wJasRLuu_LA | 2026-10-12 | 8154
+- S085 | Elon Musk Interview / The Future, Engineered / X Takeover 2025 | https://www.youtube.com/watch?v=YqDehngsBHw | 2025-07-26 | 10175
+- S086 | Elon Musk INTERVIEW at X Takeover: A MUST-SEE MOMENT | https://www.youtube.com/watch?v=tEkRY8TG2BU | 2024-07-29 | 10093
+- S087 | Full: Exclusive CMG interview with Tesla CEO Elon Musk | https://www.youtube.com/watch?v=34-5wOGmCKc | 2026-09-25 | 4822
+- S088 | All Our Patent Are Belong To You | https://web.archive.org/web/2014/https://www.tesla.com/blog/all-our-patent-are-belong-you | 2014-06-12 | 456
+- S089 | Update on Taking Tesla Private | https://web.archive.org/web/2018/https://www.tesla.com/blog/update-taking-tesla-private | 2018-08-13 | 1111
+- S090 | Staying Public | https://web.archive.org/web/2018/https://www.tesla.com/blog/staying-public | 2018-08-24 | 534
+- S091 | April, 2024: Elon Presents Plan On Making Life Multiplanetary | https://www.youtube.com/watch?v=WABYhf25RM4 | 2025-05-27 | 5621
+- S092 | Tesla Semi & Roadster Unveil | https://www.youtube.com/watch?v=5RRmepp7i5g | 2017-12-14 | 3846
+- S093 | Elon Musk's Speech for Tesla Giga Berlin Team yesterday (2.25.2026) Full Version | https://www.youtube.com/watch?v=QajoR7Zunac | 2026-02-26 | 3703
+- S094 | SpaceX Q2 2026 Earnings Call / Full Results, Elon Musk on Starship, Starlink V3 & Grok | https://www.youtube.com/watch?v=rz7B8fgY06c | 2026-08-04 | 9134
+- S095 | SpaceX Q3 FY26 Earnings Call / SPCX / Oct 20, 2026 | https://www.youtube.com/watch?v=vc4Gso1GCkg | 2026-10-21 | 8844
+- S096 | Ron Baron and Elon Musk Discuss the Future | https://www.youtube.com/watch?v=Sxtk_LoBu4E | 2025-11-20 | 8907
+- S097 | Tesla Technoking and SpaceX Chief Engineer Elon Musk / Full Interview / Code 2021 | https://www.youtube.com/watch?v=HZP67-DECVw | 2021-10-04 | 10481

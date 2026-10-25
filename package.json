@@ -1,0 +1,12 @@
+{
+  "name": "hoi-dong-chuyen-gia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hội đồng chuyên gia: 12 cố vấn AI dựng từ tác phẩm công khai (Bezos, Paul Graham, Hormozi, Buffett, Naval, Elon Musk làm Chủ toạ...) tranh luận quyết định kinh doanh của bạn bằng tiếng Việt, quanh một bàn tròn.",
+  "type": "module",
+  "scripts": {
+    "start": "node app/server.mjs",
+    "smoke": "node app/scripts/smoke.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
