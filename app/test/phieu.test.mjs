@@ -142,3 +142,28 @@ test("câu trích chưa khớp nguyên văn được ghi chú trong phiếu (l�
   assert.deepEqual(r, { file: f, so: true });
   assert.match(fs.readFileSync(f, "utf8"), /## Lần họp 2[\s\S]*Góc nhìn Chủ toạ:\*\*[^\n]*_\(câu trích chưa khớp nguyên văn\)_/);
 });
+
+test("ghiPhieu: mục Số dùng trong kết luận có nhãn nguồn; giả định và số chưa có nguồn (kể cả của Chủ toạ) tách riêng", () => {
+  const ks = { so_lieu: [
+    { so: "1,70 tỷ", y: "doanh thu T10", loai: "số liệu", nguon: "ban-hang/t10.csv", trang_thai: "co_nguon" },
+    { so: "30%", y: "tỷ lệ khách quay lại", loai: "giả định", nguon: "đếm 2 tuần đầu T11", trang_thai: "gia_dinh" },
+    { so: "45 đơn", y: "đơn mỗi ngày", loai: "số liệu", nguon: "ghi-chu/x.md", trang_thai: "khong_thay" },
+  ], chua_nguon: [{ so: "12,5%", doan: "Ngành thường đạt 12,5% chuyển đổi" }], gia_dinh: [{ so: "30%", y: "tỷ lệ khách quay lại", loai: "giả định", nguon: "đếm 2 tuần đầu T11" }] };
+  const body = fs.readFileSync(ghiPhieu({ dir: dirMoi(), today: "2026-10-25", sessionId: "s1", hoi, setup, verdict: { ...verdict, kiem_so: ks }, chairView: null, chairKiemSo: { so_lieu: [], chua_nguon: [{ so: "35%", doan: "ngành 35% quay lại" }], gia_dinh: [] } }), "utf8");
+  assert.match(body, /## Số dùng trong kết luận\n\n- \*\*1,70 tỷ\*\*: doanh thu T10 \(số liệu: ban-hang\/t10\.csv\)\n- \*\*30%\*\*: tỷ lệ khách quay lại \(giả định: đếm 2 tuần đầu T11\)\n- \*\*45 đơn\*\*: đơn mỗi ngày \(số liệu: ghi-chu\/x\.md\) _\(không thấy trong số liệu\)_/);
+  assert.match(body, /## Giả định cần kiểm\n\n- \*\*30%\*\*: tỷ lệ khách quay lại\. Kiểm: đếm 2 tuần đầu T11/);
+  assert.match(body, /## Số chưa có nguồn\n\n- \*\*12,5%\*\*: …?Ngành thường đạt 12,5% chuyển đổi\n- \*\*35%\*\* \(Góc nhìn Chủ toạ\): ngành 35% quay lại/);
+  const sach = fs.readFileSync(ghiPhieu({ dir: dirMoi(), today: "2026-10-25", sessionId: "s1", hoi, setup, verdict: { ...verdict, kiem_so: { so_lieu: [], chua_nguon: [], gia_dinh: [] } }, chairView: null }), "utf8");
+  assert.ok(!sach.includes("## Số chưa có nguồn"));
+  assert.ok(!sach.includes("## Giả định cần kiểm"));
+});
+
+test("ghiHopTiep: lần họp sau cũng ghi giả định cần kiểm và số chưa có nguồn (kể cả của Chủ toạ)", () => {
+  const dir = dirMoi();
+  const f = ghiPhieu({ dir, today: "2026-10-25", sessionId: "s1", hoi, setup, verdict, chairView: null });
+  const ks = { so_lieu: [], chua_nguon: [{ so: "12,5%", doan: "Ngành thường đạt 12,5%" }], gia_dinh: [{ so: "30%", y: "tỷ lệ khách quay lại", loai: "giả định", nguon: "đếm 2 tuần" }] };
+  ghiHopTiep({ dir, file: f, lan: 2, boSung: "Thêm số", setup, verdict: { ...verdict, kiem_so: ks }, chairView: null, chairKiemSo: { chua_nguon: [{ so: "35%", doan: "35% quay lại" }] }, today: "2026-10-26" });
+  const lan2 = fs.readFileSync(f, "utf8").split("## Lần họp 2")[1];
+  assert.match(lan2, /\*\*Giả định cần kiểm:\*\* 30% \(tỷ lệ khách quay lại\)/);
+  assert.match(lan2, /\*\*Số chưa có nguồn:\*\* 12,5%, 35% \(Góc nhìn Chủ toạ\)/);
+});

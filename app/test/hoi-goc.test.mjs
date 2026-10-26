@@ -321,3 +321,29 @@ test("HOI_BRAIN=nho: chỉ nạp _hot và principles (khi lượt hỏi chậm)"
     assert.doesNotMatch(t, /brains\/elon-musk\/frameworks\.md/);
   } finally { delete process.env.HOI_BRAIN; }
 });
+
+test("số liệu: mô tả đã kết thúc câu thì không thêm dấu hai chấm", async () => {
+  const f = { su_that: [{ y: "Tháng 8 chi gấp 2,2 lần T7.", so: "chi ×2,17", nguon: "p", ngay: "" }, { y: "Doanh thu", so: "1 tỷ", nguon: "q", ngay: "" }], chua_biet: [], tra_loi_tra_cuu: "" };
+  const { ask } = fakeAsk([luot(1), { ...deBai, chon: [0, 1] }]);
+  const hg = createHoiGoc({ ask, docTaiLieu: async () => f, saveDir: dir() });
+  const s = await hg.start("Q?");
+  const c = await hg.confirm(s.id, null);
+  assert.deepEqual(c.de_bai.so_lieu.map((x) => x.noi_dung), ["Tháng 8 chi gấp 2,2 lần T7. chi ×2,17", "Doanh thu: 1 tỷ"]);
+});
+
+test("đề bài: mục SỐ LIỆU THƯ KÝ TRÌNH ghi nguồn là thư mục tài liệu; CHƯA BIẾT về de_bai.chua_biet để thư ký báo thiếu (lỗi đọc thì không)", async () => {
+  const f = { ...facts, chua_biet: ["Giá vốn mỗi đơn"] };
+  const { ask } = fakeAsk([luot(1), deBai]);
+  const hg = createHoiGoc({ ask, docTaiLieu: async () => f, saveDir: dir() });
+  const s = await hg.start("Q?");
+  const c = await hg.confirm(s.id, null);
+  assert.match(c.de_bai.prompt, /SỐ LIỆU THƯ KÝ TRÌNH \(nguồn: thư mục tài liệu của người hỏi\):\n- Doanh thu: 1 tỷ/);
+  assert.match(c.de_bai.prompt, /CHƯA BIẾT[^\n]*\n- Giá vốn mỗi đơn/);
+  assert.deepEqual(c.de_bai.chua_biet, ["Giá vốn mỗi đơn"]);
+  const chan = { su_that: [], chua_biet: ["Không đọc được README.md: EPERM: operation not permitted"], tra_loi_tra_cuu: "" };
+  const b = fakeAsk([luot(1), deBai]);
+  const hg2 = createHoiGoc({ ask: b.ask, docTaiLieu: async () => chan, saveDir: dir() });
+  const s2 = await hg2.start("Q?");
+  const c2 = await hg2.confirm(s2.id, null);
+  assert.deepEqual(c2.de_bai.chua_biet, []);
+});

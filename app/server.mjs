@@ -55,7 +55,10 @@ const server = http.createServer(async (req, res) => {
       // portraits: which of the four mouth shapes exist for each seat (a seat with none gets a drawn bust)
       const frame = (key, sh) => ["webp", "png", "jpg"].map((x) => `${key}-${sh}.${x}`).find((f) => fs.existsSync(path.join(PUBLIC, "portraits", f)));
       const seats = loadRoster().map((s) => ({ ...s, portraits: Object.fromEntries(["base", "open", "mid", "blink"].map((sh) => [sh, frame(s.key, sh)]).filter(([, f]) => f).map(([sh, f]) => [sh, `/portraits/${f}`])) }));
-      return send(res, 200, { seats, board: BOARD, models: MODELS, runner: RUNNER, chair: chairSeat(), hasKey: Boolean(env("ANTHROPIC_API_KEY") || env("CLAUDE_CODE_OAUTH_TOKEN")) });
+      // the secretary stands behind the Chair and reads out the numbers; not a seat, never votes
+      const tk = Object.fromEntries(["base", "open", "mid", "blink"].map((sh) => [sh, frame("thuky", sh)]).filter(([, f]) => f).map(([sh, f]) => [sh, `/portraits/${f}`]));
+      const thu_ky = { key: "thuky", name: "Thư ký", short: "Thư ký", initials: "TK", color: "#7c8fa6", portraits: tk };
+      return send(res, 200, { seats, board: BOARD, models: MODELS, runner: RUNNER, chair: chairSeat(), thu_ky, hasKey: Boolean(env("ANTHROPIC_API_KEY") || env("CLAUDE_CODE_OAUTH_TOKEN")) });
     }
     if (p === "/api/usage") return send(res, 200, usage);
     if (p === "/api/hoi" && req.method === "POST") {
@@ -99,7 +102,7 @@ const server = http.createServer(async (req, res) => {
         if (!ev) throw new Error("Hội đồng chưa có kết luận");
         const setup = x.events.find((e) => e.type === "setup");
         const cv = x.events.find((e) => e.type === "chair_view");
-        const file = ghiPhieu({ dir: phieuDir(), hoi, setup, verdict: ev.verdict, chairView: cv?.view || null, chairQuotes: cv?.quotes || [], sessionId: x.id, today: homNay() });
+        const file = ghiPhieu({ dir: phieuDir(), hoi, setup, verdict: ev.verdict, chairView: cv?.view || null, chairQuotes: cv?.quotes || [], chairKiemSo: cv?.kiem_so || null, sessionId: x.id, today: homNay() });
         return { path: path.relative(REPO_ROOT, file) };
       };
       return send(res, 200, { id: s.id });
@@ -132,7 +135,7 @@ const server = http.createServer(async (req, res) => {
         const ev = [...x.events].reverse().find((e) => e.type === "verdict");
         if (!ev) throw new Error("Hội đồng chưa có kết luận");
         const cv = x.events.find((e) => e.type === "chair_view");
-        const r = ghiHopTiep({ dir: path.dirname(file), file, lan, boSung, setup: x.events.find((e) => e.type === "setup"), verdict: ev.verdict, chairView: cv?.view || null, quotes: cv?.quotes || [], today: homNay() });
+        const r = ghiHopTiep({ dir: path.dirname(file), file, lan, boSung, setup: x.events.find((e) => e.type === "setup"), verdict: ev.verdict, chairView: cv?.view || null, quotes: cv?.quotes || [], chairKiemSo: cv?.kiem_so || null, today: homNay() });
         return { path: g.phieu, cap_nhat: true, so_doi: r.so };
       };
       return send(res, 200, { id: s.id, lan });

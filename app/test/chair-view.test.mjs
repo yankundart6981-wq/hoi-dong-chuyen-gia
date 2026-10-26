@@ -33,7 +33,8 @@ test("addChairView: Chủ toạ nói bằng não của mình, phát chair_view c
   assert.match(req.prompt, /không đổi kết luận/);
   assert.match(JSON.stringify(req.system), /brains\/elon-musk\/_hot\.md/);
   assert.deepEqual(req.schema.properties.dong_y.enum, ["đồng ý", "đồng ý có điều kiện", "không đồng ý"]);
-  assert.deepEqual(Object.keys(req.schema.properties), ["dong_y", "nhan_dinh", "ly_do", "bo_buoc", "thu_nhanh"]);
+  assert.deepEqual(Object.keys(req.schema.properties), ["dong_y", "nhan_dinh", "ly_do", "bo_buoc", "thu_nhanh", "so_lieu"]);
+  assert.match(req.prompt, /NUMBERS RULE/);
   assert.equal(s.events.at(-1).type, "chair_view");
 });
 
@@ -59,4 +60,15 @@ test("addChairView: Chủ toạ thấy điểm vênh và thẻ vòng 2 (không c
   const err = console.error; console.error = () => {};
   try { await addChairView(s2, st, () => new Promise(() => {}), { timeoutMs: 30 }); } finally { console.error = err; }
   assert.match(seen.find((e) => e.type === "chair_view").error, /quá/);
+});
+
+test("addChairView: Chủ toạ thấy nguyên văn đề bài kèm tờ số liệu; số không nguồn trong góc nhìn bị gắn cờ", async () => {
+  const stSo = { ...st, prompt: "SỐ LIỆU THƯ KÝ TRÌNH:\n- Doanh thu T10: 1.698.960.000 (ban-hang/t10.csv)\n- Đơn T10: 1.096", verdict: { ...st.verdict, so_lieu: [] } };
+  const { s, seen } = phien();
+  let req;
+  const vSo = { ...view, nhan_dinh: "Thu 1.698.960.000 trên 1.096 đơn, ngành thường 35% quay lại.", ly_do: [], so_lieu: [] };
+  await addChairView(s, stSo, async (o) => { req = o; return vSo; });
+  assert.match(req.prompt, /THE FOUNDER'S BRIEF, VERBATIM[\s\S]*1\.698\.960\.000/);
+  const ev = seen.find((e) => e.type === "chair_view");
+  assert.deepEqual(ev.kiem_so.chua_nguon.map((x) => x.so), ["35%"]);
 });

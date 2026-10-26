@@ -124,6 +124,14 @@ test("GET /api/seats có chair", async () => {
   assert.ok(j.chair.length > 0);
 });
 
+test("GET /api/seats có thư ký (đứng sau Chủ toạ, không phải ghế, đủ bốn khung miệng)", async () => {
+  const j = await (await fetch(base + "/api/seats")).json();
+  assert.equal(j.thu_ky.key, "thuky");
+  assert.equal(j.thu_ky.name, "Thư ký");
+  assert.deepEqual(Object.keys(j.thu_ky.portraits).sort(), ["base", "blink", "mid", "open"]);
+  assert.ok(!j.seats.some((s) => s.key === "thuky"));
+});
+
 const getHost = (host) => new Promise((res, rej) => {
   http.get({ host: "127.0.0.1", port, path: "/api/seats", headers: { host } }, (r) => { let b = ""; r.on("data", (c) => (b += c)); r.on("end", () => res({ status: r.statusCode, body: b })); }).on("error", rej);
 });

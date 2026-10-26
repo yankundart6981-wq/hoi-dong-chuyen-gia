@@ -60,6 +60,30 @@ Thời gian đo được trên máy thật:
 
 Không đặt thì hội đồng vẫn chạy bình thường, chỉ là không có số liệu kiểm chứng. Khi đó bạn nên đưa con số thẳng vào câu hỏi.
 
+## Luật không bịa số
+
+Hội đồng chỉ được dùng con số từ ba nguồn:
+1. điều bạn viết trong câu hỏi, câu trả lời và phần bổ sung;
+2. tờ "Số liệu thư ký trình" đọc từ thư mục tài liệu, mỗi số có file nguồn;
+3. phép tính từ hai nguồn trên, ghi rõ phép tính (ví dụ "1,70 tỷ ÷ 1.096 đơn = 1,55 triệu/đơn").
+
+Quy tắc đi kèm:
+- Không dùng số trung bình ngành, "tỷ lệ thường gặp" hay số của công ty khác làm số của bạn.
+- Thiếu số thì ghi "Chưa có số: …" và biến việc đo nó thành một bước. Buộc phải ước thì ghi "GIẢ ĐỊNH: …" kèm cách kiểm trong 30 ngày.
+- Kết luận và Góc nhìn Chủ toạ kê mọi con số kèm nhãn: đề bài, số liệu, tính hoặc giả định.
+- Sau đó máy dò lại từng số trong chữ (`app/lib/luat-so.mjs`). Ngày tháng, giờ, mã nguồn và thời hạn ("thử 14 ngày") không tính là số liệu. Ngày trong tháng (26/10) và hằng lịch (7, 28–31 ngày) chỉ được dùng làm toán hạng của phép tính.
+- Số không tìm thấy nguồn bị gắn cờ "chưa có nguồn": trên trang kết luận, trên tấm kết luận giữa bàn, trong Góc nhìn Chủ toạ, trong PDF và trong phiếu (mục "Số dùng trong kết luận", "Giả định cần kiểm", "Số chưa có nguồn").
+
+Cờ là cảnh báo để bạn đọc kỹ, không phải bằng chứng số sai. Máy dò theo quy tắc nên vẫn có thể sót hoặc bắt nhầm.
+
+## Thư ký
+
+Thư ký đứng sau Chủ toạ. Cô không có ghế và không bỏ phiếu.
+- Trong vòng hỏi, thư ký nói trước Chủ toạ một câu nhận xét số: tờ sự thật đang ủng hộ hay phản bác câu trả lời của bạn, kèm file nguồn.
+- Khi chốt đề bài, thư ký trình từng số liệu; dòng đang đọc sáng lên trên thẻ đề bài. Sau đó cô báo điều chưa có số và lỗi đọc tài liệu nếu có.
+- Không nối thư mục tài liệu thì thư ký báo chưa có số liệu, và hội đồng chỉ dùng số bạn tự đưa.
+- Tranh thư ký nằm ở `app/public/portraits/thuky-{base,open,mid,blink}.webp`; thay bốn file này để đổi hình.
+
 ## Cấu hình (`.env`)
 
 | Biến | Ý nghĩa |

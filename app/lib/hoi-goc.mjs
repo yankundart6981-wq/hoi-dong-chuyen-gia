@@ -109,6 +109,9 @@ function canhBao(s) {
   return "";
 }
 
+// "Doanh thu: 1 tỷ"; a description that already ends a sentence is not followed by another colon
+const noiDungSo = ({ y, so }) => (!so ? y || "" : !y ? so : /[.;:!?]$/.test(y.trim()) ? `${y.trim()} ${so}` : `${y}: ${so}`);
+
 /** Đề bài gửi hội đồng ≤ MAX_PROMPT. Số liệu dựng thẳng từ tờ sự thật theo số thứ tự model chọn (≤ 8), nên không lệch chữ, không bịa.
  * Quá dài thì bỏ dần từ cuối: CHƯA BIẾT → VÒNG HỎI → SỐ LIỆU; vấn đề gốc và phương án luôn giữ. */
 function buildPrompt(s, db) {
@@ -117,7 +120,7 @@ function buildPrompt(s, db) {
   const su = s.facts?.su_that ?? [];
   const chon = [...new Set((db.chon ?? []).filter((i) => Number.isInteger(i) && i >= 0 && i < su.length))];
   let sl = (chon.length ? chon : su.map((_, i) => i)).slice(0, 8)
-    .map((i) => ({ noi_dung: [su[i].y, su[i].so].filter(Boolean).join(": "), nguon: su[i].nguon, ngay: su[i].ngay }));
+    .map((i) => ({ noi_dung: noiDungSo(su[i]), nguon: su[i].nguon, ngay: su[i].ngay }));
   let vh = s.luot.flatMap((l) => {
     const tl = new Map((l.tra_loi || []).map((t) => [t.id, t]));
     return l.cau_hoi.filter((q) => tl.get(q.id)?.chon || tl.get(q.id)?.tu_go).map((q) => `- ${cut(q.hoi, 160)} → ${cut(fmtTraLoi(tl.get(q.id)), 200)}`);
@@ -129,7 +132,7 @@ function buildPrompt(s, db) {
     `CÂU HỎI BAN ĐẦU: ${cut(s.cauHoi, 800)}`,
     `NẾU PHẢI QUYẾT HÔM NAY, NGƯỜI HỎI CHỌN: ${cut(s.tra_loi_ban_dau, 400)}`,
     ...(vh.length ? ["VÒNG HỎI (rút gọn, hỏi → người hỏi trả lời):", ...vh] : []),
-    "SỐ LIỆU (nguồn: thư mục tài liệu của người hỏi):",
+    "SỐ LIỆU THƯ KÝ TRÌNH (nguồn: thư mục tài liệu của người hỏi):",
     ...(sl.length ? sl.map((x) => `- ${cut(x.noi_dung, 400)} (${cut(x.nguon, 120)}${x.ngay ? `, ${cut(x.ngay, 20)}` : ""})`) : [`- chưa có số liệu đã kiểm trong tài liệu${hong ? " (chưa đọc được tài liệu)" : ""}`]),
     ...(cb.length ? ["CHƯA BIẾT (tài liệu không có):", ...cb] : []),
     "PHƯƠNG ÁN:",
@@ -141,7 +144,7 @@ function buildPrompt(s, db) {
     if (cb.length) cb = cb.slice(0, -1); else if (vh.length) vh = vh.slice(0, -1); else sl = sl.slice(0, -1);
     prompt = make();
   }
-  return { prompt, so_lieu: sl, phuong_an: phuongAn };
+  return { prompt, so_lieu: sl, phuong_an: phuongAn, chua_biet: hong ? [] : (s.facts?.chua_biet ?? []).slice(0, 4).map((x) => cut(x, 160)) };
 }
 
 export function createHoiGoc({ ask, docTaiLieu, saveDir, newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6) }) {
@@ -223,8 +226,8 @@ export function createHoiGoc({ ask, docTaiLieu, saveDir, newId = () => Date.now(
       s.tra_loi_ban_dau ||= "chưa nêu";
       const d = await ask({ model: model(), system: SYSTEM_DE_BAI, prompt: promptDeBai(s), schema: DE_BAI, effort: env("DOC_EFFORT") || "xhigh" });
       const canh_bao = canhBao(s);
-      const { prompt, so_lieu, phuong_an } = buildPrompt(s, d);
-      s.de_bai = { title: cut(d.title, 60), van_de_goc: s.van_de_goc, tra_loi_ban_dau: s.tra_loi_ban_dau, so_lieu, phuong_an, prompt, bo_qua_vong_hoi: s.bo_qua_vong_hoi, canh_bao };
+      const { prompt, so_lieu, phuong_an, chua_biet } = buildPrompt(s, d);
+      s.de_bai = { title: cut(d.title, 60), van_de_goc: s.van_de_goc, tra_loi_ban_dau: s.tra_loi_ban_dau, so_lieu, chua_biet, phuong_an, prompt, bo_qua_vong_hoi: s.bo_qua_vong_hoi, canh_bao };
       luu(s);
       return { de_bai: s.de_bai };
     },

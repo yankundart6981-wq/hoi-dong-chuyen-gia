@@ -4,6 +4,7 @@ import { SEATS, BOARD, byKey, systemFor, parseCard, checkQuotes, defaultBoard, l
 import * as ai from "./anthropic.mjs";
 import { S } from "./anthropic.mjs";
 import { SESSIONS_DIR, env } from "./env.mjs";
+import { LUAT_SO, kiemSo } from "./luat-so.mjs";
 
 export const MODELS = {
   seat: env("SEAT_MODEL") || "claude-sonnet-5-5",
@@ -61,7 +62,8 @@ export function subscribe(s, res) {
 // ---------------------------------------------------------------- prompts
 function briefBlock(st) {
   const opts = st.options.map((o) => `(${o.id}) ${o.label}`).join("\n");
-  return `THE DECISION: ${st.decision}\n\nOPTIONS:\n${opts}\n\n${st.brief}\n\nAssumptions the Chair made (marked as assumed; challenge them if they matter):\n${st.assumptions.map((a) => `- ${a}`).join("\n")}`;
+  const goc = st.prompt ? `\n\nTHE FOUNDER'S BRIEF, VERBATIM, WITH THE SECRETARY'S SỐ LIỆU SHEET (the only source of numbers about this business):\n"""${st.prompt}"""` : "";
+  return `THE DECISION: ${st.decision}\n\nOPTIONS:\n${opts}\n\n${st.brief}\n\nAssumptions the Chair made (marked as assumed; challenge them if they matter):\n${st.assumptions.map((a) => `- ${a}`).join("\n")}${goc}`;
 }
 const optLine = (st) => st.options.map((o) => `${o.id} n/10`).join(" · ");
 
@@ -96,7 +98,9 @@ WHAT WOULD CHANGE MY MIND: a concrete fact or number.
 WHAT I'D DO THIS WEEK: one action.
 QUESTION FOR THE FOUNDER: the one question you would ask before signing off.
 
-Rules: argue from your pillar first. Use real numbers when the brief has them, and say which numbers you are assuming. Quote only verbatim lines from your brain, with the source id. Do not hedge to sound balanced; the Chair balances the council.`;
+Rules: argue from your pillar first. Quote only verbatim lines from your brain, with the source id. Do not hedge to sound balanced; the Chair balances the council.
+
+${LUAT_SO}`;
 }
 
 function cardsBlock(st, round) {
@@ -133,7 +137,9 @@ RUIN RISK: none | possible | likely
 MOVED: no | yes, from X to Y, because ...
 MY CONDITIONS FOR YES: up to three, concrete and checkable (a number, a date, a test result).
 
-Rules: engage the actual arguments on the table. Move only for a better argument, never to be agreeable. If everyone agrees with you, attack the weakest part of your own case.`;
+Rules: engage the actual arguments on the table. Move only for a better argument, never to be agreeable. If everyone agrees with you, attack the weakest part of your own case. A rebuttal built on a number with no source loses to one built on a sourced number.
+
+${LUAT_SO}`;
 }
 
 function round3Prompt(st, seat) {
@@ -165,7 +171,9 @@ OPTION SCORES: ${optLine(st)}   (given the resolution's conditions)
 FINAL SCORE: n/10   (your support for the draft resolution as written)
 FINAL PILLAR SCORE: n/10
 AMENDMENT OR DISSENT: one or two sentences. Blank if you endorse.
-ONE LINE FOR THE FOUNDER: the thing from your pillar they must not forget.`;
+ONE LINE FOR THE FOUNDER: the thing from your pillar they must not forget.
+
+${LUAT_SO}`;
 }
 
 // ---------------------------------------------------------------- scoring
@@ -215,10 +223,12 @@ Set up the room.
 - decision: one line.
 - options: 2 to 4 options with ids A, B, C (D only if truly needed). Always include "don't do it" or "keep doing what you do now", and the obvious smaller version if the founder brought one big idea.
 - brief: under 200 words covering the business, resources, what success looks like, and the founder's lean, using only what the founder said. Do not invent facts.
-- assumptions: any number or fact you had to assume to make the brief usable, each one line. Keep it to what matters.
+- assumptions: any number or fact you had to assume to make the brief usable, each one line starting with "GIẢ ĐỊNH:" and saying how to check it within 30 days. Keep it to what matters; never present an assumed number as the founder's.
 - weights: one entry for every seat, weight 1 to 3 (3 = the decision lives in this pillar, 2 = materially affected, 1 = touched at the edges). Exactly one or two seats at 3. Reason in one line.
 - quick_seats: the four seats for a quick council: the two highest-weight seats, the seat that guards the downside (money, capital, or risk) if it is not already in, and the seat most likely to disagree with the others.
-- seats: ${st.pick ? "the board for a full council, five to seven seats: every seat at weight 2 or 3, the seat that guards the downside, and the seat most likely to disagree. Leave out seats at weight 1 unless they are the downside or dissent seat." : "every seat (the board is fixed)."}`,
+- seats: ${st.pick ? "the board for a full council, five to seven seats: every seat at weight 2 or 3, the seat that guards the downside, and the seat most likely to disagree. Leave out seats at weight 1 unless they are the downside or dissent seat." : "every seat (the board is fixed)."}
+
+${LUAT_SO}`,
   });
 }
 
@@ -239,7 +249,9 @@ ${cardsBlock(st, 1)}
 Name the one to three cruxes: the underlying disagreements that explain why seats split (a fact, a number, or a value such as speed versus safety), with the seats on each side.
 Unanimity check: if every seat's top option is the same and their scores for it sit within 1 point, set unanimous true, make the strongest unargued alternative a crux, and say which seats whose pillars are most at risk must argue it at full strength.
 note: one or two plain sentences for the founder on what the room is fighting about.
-pressure: for each seat that holds a minority view, or that the unanimity check names, one sentence telling it exactly which argument it must answer in Round 2. Leave others out.`,
+pressure: for each seat that holds a minority view, or that the unanimity check names, one sentence telling it exactly which argument it must answer in Round 2. Leave others out. When a crux is a number nobody has, say "Chưa có số: …" instead of picking one.
+
+${LUAT_SO}`,
   });
 }
 
@@ -263,7 +275,9 @@ ${cardsBlock(st, 2)}
 Interim weighted option scores: ${JSON.stringify(Object.fromEntries(Object.entries(interim).map(([k, v]) => [k, v.score])))}
 Band rule: 7.5+ GO, 6.0 to 7.4 GO WITH CONDITIONS, 4.5 to 5.9 RESHAPE, under 4.5 DON'T DO IT. Use WAIT when the top option is good but depends on a prerequisite not met yet. Overrides: any seat at RUIN RISK likely caps at RESHAPE until a mitigation it endorsed is in the conditions.
 
-Write the draft resolution. Weigh arguments, not headcount: one seat with a decisive fact beats three with vibes. Merge duplicate conditions, keep each checkable (a number or a date), and where seats gave different numbers pick one and say whose. Next steps carry dates or day counts. recommendation is one or two sentences.`,
+Write the draft resolution. Weigh arguments, not headcount: one seat with a decisive fact beats three with vibes. Merge duplicate conditions, keep each checkable (a number or a date), and where seats gave different numbers keep the one with a source (the brief, SỐ LIỆU, or arithmetic on them) and say whose; a number without one becomes "GIẢ ĐỊNH: …" or "Chưa có số: …". Next steps carry dates or day counts. recommendation is one or two sentences.
+
+${LUAT_SO}`,
   });
 }
 
@@ -282,6 +296,7 @@ async function chairVerdict(st, finalScores, recommended) {
     cheapest_test: S.str,
     kill_criteria: S.str,
     revisit: S.str,
+    so_lieu: SO_LIEU,
   });
   return ai.json({
     model: MODELS.chair, system: chairSystem(st), schema, maxTokens: 5000,
@@ -305,9 +320,20 @@ Write the verdict for the founder.
 - fights: one entry per crux: who was on each side, who moved and why, how it resolved.
 - minority: the strongest losing view; quote copies the seat's own words exactly from a card; would_have_to_be_true in one line. If unanimous, use the least-tested assumption instead.
 - amendments: every Round 3 amendment, adopted or not, with the reason (empty in quick mode). Adopt when no seat objected or the argument went unanswered.
-- conditions, next_steps (with when), cheapest_test, kill_criteria, revisit: final, merged, checkable.`,
+- conditions, next_steps (with when), cheapest_test, kill_criteria, revisit: final, merged, checkable.
+- so_lieu: every number that appears in call, why, conditions, next_steps, cheapest_test and kill_criteria (not dates, deadlines, option letters or the computed scores). so = the number exactly as you wrote it; y = what it measures; loai = "đề bài" (the founder gave it), "số liệu" (from the SỐ LIỆU sheet; nguon = its source as listed there), "tính" (nguon = the arithmetic, using only đề bài and SỐ LIỆU numbers), or "giả định" (nguon = how to check it within 30 days). Write y and nguon in Vietnamese. Never list a number you cannot source as "số liệu": mark it "giả định" or take it out of the verdict.
+
+${LUAT_SO}`,
   });
 }
+
+// Every number in the verdict and the Chair's view is listed with where it came from; kiemSo then checks it.
+const SO_LIEU = S.arr(S.obj({ so: S.str, y: S.str, loai: S.enum("đề bài", "số liệu", "tính", "giả định"), nguon: S.str }));
+// Numbers the council may use: the founder's brief and additions with the secretary's sheet (in a follow-up, not the
+// last verdict's own numbers), plus what the app computed (scores, confidence, weights).
+const dauVaoSo = (st) => String(st.prompt || "").split("\n").filter((l) => !/^KẾT LUẬN LẦN TRƯỚC:/.test(l)).join("\n");
+const cacBanSo = (v, st) => [...Object.values(v?.scores || {}).map((x) => x.score), v?.confidence, v?.support, v?.spread, ...Object.values(st.weights || {}).map((w) => w.weight)];
+const vanBanKetLuan = (v) => [v.call, ...(v.why || []).map((w) => w.point), ...(v.conditions || []), ...(v.next_steps || []).map((n) => n.action), v.cheapest_test, v.kill_criteria].join("\n");
 
 const CHAIR_VIEW = S.obj({
   dong_y: S.enum("đồng ý", "đồng ý có điều kiện", "không đồng ý"),
@@ -315,6 +341,7 @@ const CHAIR_VIEW = S.obj({
   ly_do: S.arr(S.obj({ y: S.str, khung: S.str, nguon: S.str })),
   bo_buoc: S.str,
   thu_nhanh: S.str,
+  so_lieu: SO_LIEU,
 });
 
 /** After the verdict the Chair speaks from his own brain: does he agree, why, what he would delete,
@@ -347,10 +374,14 @@ Bạn là Chủ toạ của hội đồng này, nói bằng kiến thức của 
 - nhan_dinh: tối đa 2 câu, dưới 50 từ, ý chính của bạn (câu này được đọc to ở bàn).
 - ly_do: 2 đến 4 lý do, mỗi lý do tối đa 3 câu, có con số khi có. Mỗi lý do gắn một khung của bạn (khung, tên ngắn) và một mã nguồn S0xx có trong não (nguon). Muốn trích nguyên văn thì để câu tiếng Anh trong ngoặc kép, ngay sau là (S0xx), dưới 45 từ, chép đúng từng chữ trong não.
 - bo_buoc: một yêu cầu hoặc một bước nên xoá, kèm người sở hữu nếu biết.
-- thu_nhanh: thí nghiệm nhanh nhất theo bạn, có con số và hạn.`,
+- thu_nhanh: thí nghiệm nhanh nhất theo bạn, có con số và hạn.
+- so_lieu: mọi con số về doanh nghiệp này bạn viết ở trên (không tính ngày tháng, mã nguồn S0xx, điểm của hội đồng): so là con số đúng như bạn viết, y là nó đo cái gì, loai là "đề bài", "số liệu" (nguon = nguồn ghi trong tờ SỐ LIỆU), "tính" (nguon = phép tính, chỉ từ số đề bài và SỐ LIỆU) hoặc "giả định" (nguon = cách kiểm trong 30 ngày). Số kể về công ty của chính bạn không thuộc doanh nghiệp này, không kê.
+
+${LUAT_SO}`,
     })]);
     const text = [view.nhan_dinh, ...view.ly_do.map((l) => `${l.y} (${l.nguon})`), view.bo_buoc, view.thu_nhanh].join("\n");
-    emit(s, "chair_view", { view, quotes: checkQuotes(key, text) });
+    const kiem_so = kiemSo({ dauVao: dauVaoSo(st), soLieu: [...(view.so_lieu || []), ...(v.so_lieu || [])], cacBan: cacBanSo(v, st), vanBan: text.replace(/\(S\d{3}[^)]*\)/g, " ") });
+    emit(s, "chair_view", { view, quotes: checkQuotes(key, text), kiem_so });
   } catch (e) {
     console.error("chair_view", e);
     emit(s, "chair_view", { error: String(e.message || e) });
@@ -460,6 +491,7 @@ async function run(s) {
   emit(s, "phase", { phase: "verdict", label: "The Chair is writing the verdict" });
   const v = await chairVerdict(st, finalScores, recommended);
   st.verdict = { ...v, recommended, scores: finalScores, spread: spreadF, confidence, support, votes, disclaimer: DISCLAIMER };
+  st.verdict.kiem_so = kiemSo({ dauVao: dauVaoSo(st), soLieu: v.so_lieu, cacBan: cacBanSo(st.verdict, st), vanBan: vanBanKetLuan(v) });
   emit(s, "verdict", { verdict: st.verdict, seats: verdictSeats(st, last) });
   await addChairView(s, st);
   finishRun(s);

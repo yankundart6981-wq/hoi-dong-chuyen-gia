@@ -33,9 +33,17 @@ function gocNhin(cv, quotes) {
   ];
 }
 
+/** Số dùng trong kết luận (kiemSo): mỗi số một dòng có nhãn nguồn; số kê là số liệu mà không thấy trong số liệu thì ghi chú. */
+const soDung = (ks) => (ks?.so_lieu ?? []).map((e) => `- **${dong(e.so)}**: ${dong(e.y)} (${dong(e.loai)}${e.nguon ? `: ${dong(e.nguon)}` : ""})${e.trang_thai === "khong_thay" ? " _(không thấy trong số liệu)_" : ""}`);
+const giaDinh = (ks) => (ks?.gia_dinh ?? []).map((e) => `- **${dong(e.so)}**: ${dong(e.y)}. Kiểm: ${dong(e.nguon)}`);
+const chuaNguon = (ks, ksChuToa) => [
+  ...(ks?.chua_nguon ?? []).map((x) => `- **${dong(x.so)}**: ${dong(x.doan)}`),
+  ...(ksChuToa?.chua_nguon ?? []).map((x) => `- **${dong(x.so)}** (Góc nhìn Chủ toạ): ${dong(x.doan)}`),
+];
+
 const muc = (tieuDe, dongs) => (dongs.length ? [`## ${tieuDe}`, "", ...dongs, ""] : []);
 
-function noiDung({ hoi, setup, verdict, chairView, chairQuotes, sessionId, today, han }) {
+function noiDung({ hoi, setup, verdict, chairView, chairQuotes, chairKiemSo, sessionId, today, han }) {
   try { loadRoster(); } catch { /* không có roster thì giữ key */ }
   const tenGhe = (k) => byKey[k]?.short || byKey[k]?.name || k;
   const opts = setup?.options ?? [];
@@ -58,6 +66,9 @@ function noiDung({ hoi, setup, verdict, chairView, chairQuotes, sessionId, today
     ...muc("Số liệu đã đọc", sl),
     ...muc("Kết luận", [`**${nhan}**${pa ? ` — phương án ${pa.id}: ${dong(pa.label)}` : ""}`, "", verdict.call, "", `Độ tin cậy: ${verdict.confidence ?? "-"}/10. Xem lại trước ${han}.`]),
     ...muc("Góc nhìn Chủ toạ", gocNhin(chairView, chairQuotes)),
+    ...muc("Số dùng trong kết luận", soDung(verdict.kiem_so)),
+    ...muc("Giả định cần kiểm", giaDinh(verdict.kiem_so)),
+    ...muc("Số chưa có nguồn", chuaNguon(verdict.kiem_so, chairKiemSo)),
     ...muc("Điểm", opts.map((x) => `- ${x.id}. ${dong(x.label)}: ${verdict.scores?.[x.id]?.score ?? "-"}`)),
     ...muc("Vì sao", (verdict.why ?? []).map((w) => `- ${dong(w.point)} (${tenGhe(w.seat)})`)),
     ...muc("Bước tiếp theo", (verdict.next_steps ?? []).map((n) => `- **${dong(n.when)}:** ${dong(n.action)}`)),
@@ -78,14 +89,14 @@ Hội đồng chuyên gia ghi mỗi phiếu ở đây, mới nhất lên đầu.
 `;
 
 /** Ghi phiếu vào `dir` rồi chèn một dòng ngay dưới `|---|` của 00-so-phieu.md (nếu sổ có). Chỉ ghi trong `dir`. */
-export function ghiPhieu({ dir, hoi, setup, verdict, chairView = null, chairQuotes = [], sessionId, today }) {
+export function ghiPhieu({ dir, hoi, setup, verdict, chairView = null, chairQuotes = [], chairKiemSo = null, sessionId, today }) {
   const han = cong30(today);
   const slug = slugVi(setup?.title || hoi.cauHoi) || "phieu";
   fs.mkdirSync(dir, { recursive: true });
   let ten = `${today}-hoi-dong-${slug}.md`;
   for (let i = 2; fs.existsSync(path.join(dir, ten)); i++) ten = `${today}-hoi-dong-${slug}-${i}.md`;
   const file = path.join(dir, ten);
-  fs.writeFileSync(file, noiDung({ hoi, setup, verdict, chairView, chairQuotes, sessionId, today, han }));
+  fs.writeFileSync(file, noiDung({ hoi, setup, verdict, chairView, chairQuotes, chairKiemSo, sessionId, today, han }));
 
   const so = path.join(dir, "00-so-phieu.md");
   if (!fs.existsSync(so)) fs.writeFileSync(so, SO_MOI);
@@ -105,7 +116,7 @@ const ddmm = (d) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
 /** Họp tiếp: nối "Lần họp n" vào cuối phiếu cũ (một quyết định một phiếu), rồi sửa đúng dòng sổ trỏ
  * tới file đó: cột Kết luận thành "(họp lần n dd/mm) <call>", Hạn xem lại thành hôm nay + 30 ngày.
  * Không có sổ, hoặc sổ không có dòng đó, thì chỉ nối vào file. */
-export function ghiHopTiep({ dir, file, lan, boSung, setup, verdict, chairView, quotes = [], today }) {
+export function ghiHopTiep({ dir, file, lan, boSung, setup, verdict, chairView, quotes = [], chairKiemSo = null, today }) {
   const pa = (setup?.options ?? []).find((x) => x.id === verdict.recommended);
   const nhan = NHAN[verdict.label] || verdict.label;
   const ds = (tieuDe, xs) => (xs.length ? [`**${tieuDe}:**`, ...xs, ""] : []);
@@ -118,6 +129,8 @@ export function ghiHopTiep({ dir, file, lan, boSung, setup, verdict, chairView, 
     ...ds("Bước tiếp theo", (verdict.next_steps ?? []).map((n) => `- ${dong(n.when)}: ${dong(n.action)}`)),
     ...(verdict.kill_criteria ? [`**Dừng nếu:** ${dong(verdict.kill_criteria)}`, ""] : []),
     danhDau(quotes)(`**Góc nhìn Chủ toạ:** ${chairView ? `${DONG_Y[chairView.dong_y] || dong(chairView.dong_y)}. ${dong(chairView.nhan_dinh)}` : "Chưa có góc nhìn Chủ toạ."}`), "",
+    ...((verdict.kiem_so?.gia_dinh ?? []).length ? [`**Giả định cần kiểm:** ${verdict.kiem_so.gia_dinh.map((e) => `${dong(e.so)} (${dong(e.y)})`).join("; ")}`, ""] : []),
+    ...(chuaNguon(verdict.kiem_so, chairKiemSo).length ? [`**Số chưa có nguồn:** ${[...(verdict.kiem_so?.chua_nguon ?? []).map((x) => dong(x.so)), ...(chairKiemSo?.chua_nguon ?? []).map((x) => `${dong(x.so)} (Góc nhìn Chủ toạ)`)].join(", ")}`, ""] : []),
   ];
   const cu = fs.readFileSync(file, "utf8");
   fs.appendFileSync(file, (cu.endsWith("\n") ? "" : "\n") + L.join("\n"));

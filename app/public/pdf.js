@@ -171,6 +171,16 @@ export async function downloadVerdictPdf({ setup, verdict: ev, chairView, byKey,
     if (cv.thu_nhanh) bullet("Thử nhanh", ghi(cv.thu_nhanh));
   }
 
+  // ---------------------------------------------------------------- numbers and their sources
+  const ks = v.kiem_so;
+  const ksChuToa = chairView?.kiem_so;
+  if (ks?.so_lieu?.length || ks?.chua_nguon?.length || ksChuToa?.chua_nguon?.length) {
+    section("Số dùng trong kết luận");
+    const chua = [...(ks?.chua_nguon || []).map((x) => x.so), ...(ksChuToa?.chua_nguon || []).map((x) => `${x.so} (Góc nhìn Chủ toạ)`)];
+    if (chua.length) para(`Chưa có nguồn: ${chua.join(", ")}`, { size: 10.5, style: "semibold", color: [180, 83, 9], gap: 6 });
+    for (const e of (ks?.so_lieu || []).slice(0, 14)) bullet(e.so, `${e.y} (${e.loai}${e.nguon ? `: nguồn ${e.nguon}` : ""})${e.trang_thai === "khong_thay" ? " — không thấy trong số liệu" : ""}`);
+  }
+
   // ---------------------------------------------------------------- scores
   section("Điểm");
   const best = v.recommended;

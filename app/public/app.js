@@ -96,6 +96,7 @@ const state = {
 // The Chair (the `musk` seat by default) does not debate: he sits in the middle, behind the table,
 // asks the root-question rounds and leads the council. His bust is #seat-chair; "chair" is his key on the stage.
 const CHAIR = "chair";
+const THU_KY = "thuky";
 const isChair = (k) => k === CHAIR || (!!k && k === state.chair);
 const seatEl = (k) => (isChair(k) ? $("#seat-chair") : k ? $(`#seat-${k}`) : null);
 const plateEl = (k) => (isChair(k) ? $("#plate-chair") : k ? $(`#plate-${k}`) : null);
@@ -133,6 +134,8 @@ async function refreshSeats() {
   state.seats = r.seats;
   state.byKey = Object.fromEntries(r.seats.map((s) => [s.key, s]));
   state.chair = state.byKey[r.chair] ? r.chair : null;
+  state.thuKy = state.chair && r.thu_ky ? r.thu_ky : null; // stands behind the Chair; not a seat, never votes
+  if (state.thuKy) state.byKey[THU_KY] = state.thuKy;
   state.board = (r.board?.default || []).filter((k) => state.byKey[k] && k !== state.chair);
   if (!state.board.length) state.board = r.seats.filter((s) => s.key !== state.chair).slice(0, 7).map((s) => s.key);
   bustCache.clear();
@@ -184,6 +187,9 @@ function renderSeats(keys) {
     <div class="seat chair" id="seat-chair" data-seat="${CHAIR}" aria-label="${esc(chairName())}">
       <div class="think" aria-hidden="true"><i></i><i></i><i></i></div>
       ${bust(ch.key)}
+    </div>` : "") + (state.thuKy ? `
+    <div class="seat thuky" id="seat-${THU_KY}" data-seat="${THU_KY}" aria-label="Thư ký">
+      ${bust(THU_KY)}<span class="tk-label">Thư ký</span>
     </div>` : "") + seats.map((s, i) => `
     <div class="seat" id="seat-${s.key}" data-seat="${s.key}" style="--d:-${(i * 1.7) % 6}s" tabindex="0" role="button" aria-label="${esc(s.name)}, ${esc(pillarOf(s))}. Mở thẻ.">
       <div class="think" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -269,6 +275,12 @@ function layoutStage() {
     state.geo[s.key] = { x, head: top + s.size * 0.28, top: top + s.size * 0.1, size: s.size };
   }
   if (state.geo[CHAIR]) state.geo[state.chair] = state.geo[CHAIR];
+  const ghe = sc.seats.find((s) => s.key === CHAIR), tk = $(`#seat-${THU_KY}`);
+  if (ghe && tk) {
+    const size = ghe.size * 0.78, x = cx + ghe.x + ghe.size * 0.6, top = cy + ghe.top - ghe.size * 0.1;
+    Object.assign(tk.style, { left: `${x - size / 2}px`, top: `${top}px`, width: `${size}px`, height: `${size}px` });
+    state.geo[THU_KY] = { x, head: top + size * 0.28, top: top + size * 0.1, size };
+  }
   state.tableCentre = { x: cx, y: cy };
   if (narrow) {
     stage.style.minHeight = "";
@@ -316,7 +328,7 @@ function bindUI() {
   $("#hoi").addEventListener("input", (e) => e.target.closest(".hoi-q")?.classList.remove("missing"));
   // the Chair's bust opens a card only when he spoke as a seat (councils from before he chaired)
   const openFrom = (e) => {
-    const b = e.target.closest("[data-seat]"); if (!b) return;
+    const b = e.target.closest("[data-seat]"); if (!b || b.dataset.seat === THU_KY) return;
     const k = b.dataset.seat === CHAIR ? state.chair : b.dataset.seat;
     if (k && (b.dataset.seat !== CHAIR || [1, 2, 3].some((r) => state.cards[r][k]))) openCard(k);
   };
@@ -679,7 +691,7 @@ function startBlinking() {
     }
     setTimeout(() => blink(key), 2400 + Math.random() * 4200);
   };
-  [...(state.chair ? [CHAIR] : []), ...state.table].filter((k) => !blinking.has(k)).forEach((k, i) => { blinking.add(k); setTimeout(() => blink(k), 600 + i * 530); });
+  [...(state.chair ? [CHAIR] : []), ...(state.thuKy ? [THU_KY] : []), ...state.table].filter((k) => !blinking.has(k)).forEach((k, i) => { blinking.add(k); setTimeout(() => blink(k), 600 + i * 530); });
 }
 
 async function onSeatDone(ev) {
@@ -858,6 +870,7 @@ function onVerdict(ev) {
     </div>
     <p class="v-call">${esc(v.call)}</p>
     <div class="v-sec v-chair" id="vChair">${chairViewHtml(state.chairView || { pending: state.replaying ? state.expectChairView : !state.ended })}</div>
+    ${soLieuHtml(v.kiem_so)}
     <div class="v-grid">
       <div class="v-sec"><h3>Điểm</h3><div class="v-opts">${state.options.map((o) => `
         <div class="opt ${o.id === v.recommended ? "lead" : ""}"><span class="id">${o.id}</span><span class="label">${esc(o.label)}</span><span class="val">${v.scores[o.id]?.score ?? "-"}</span><span class="bar"><i style="width:${(v.scores[o.id]?.score || 0) * 10}%"></i></span></div>`).join("")}</div>
@@ -887,7 +900,7 @@ function onVerdict(ev) {
   $("#verdictBody").innerHTML = html;
   const plate = $("#plate");
   plate.hidden = false;
-  plate.innerHTML = `<div class="label">Kết luận của hội đồng</div><span class="v-label ${labelClass(v.label)}">${esc(verdictVi(v.label))}</span><p>${esc(firstSentences(clean(v.call), 150))}</p><div class="row"><button type="button" id="plateOpen">Đọc kết luận</button><button type="button" data-pdf>Tải PDF</button><button type="button" class="alt" id="plateReplay">Phát lại hội đồng này</button></div>${hopTiepHtml()}`;
+  plate.innerHTML = `<div class="label">Kết luận của hội đồng</div><span class="v-label ${labelClass(v.label)}">${esc(verdictVi(v.label))}</span><p>${esc(firstSentences(clean(v.call), 150))}</p><div class="row"><button type="button" id="plateOpen">Đọc kết luận</button><button type="button" data-pdf>Tải PDF</button><button type="button" class="alt" id="plateReplay">Phát lại hội đồng này</button></div>${v.kiem_so?.chua_nguon?.length ? `<p class="plate-so">${v.kiem_so.chua_nguon.length} số trong kết luận chưa có nguồn. Bấm "Đọc kết luận" để xem.</p>` : ""}${hopTiepHtml()}`;
   $("#plateOpen").addEventListener("click", () => ($("#verdictSheet").hidden = false));
   $("#plateReplay").addEventListener("click", () => replay(state.session));
   $("#playbar").hidden = true;
@@ -915,7 +928,20 @@ function chairViewHtml(ev) {
     <p class="chair-say">${esc(v.nhan_dinh)}${flag(v.nhan_dinh)}</p>
     <ul class="chair-why">${(v.ly_do || []).map((l) => `<li><span>${esc(l.y)} <span class="muted">(${esc([l.khung, l.nguon].filter(Boolean).join(", "))})</span>${flag(l.y)}</span></li>`).join("")}</ul>
     ${v.bo_buoc ? `<p><b>Nên xoá:</b> ${esc(v.bo_buoc)}${flag(v.bo_buoc)}</p>` : ""}
-    ${v.thu_nhanh ? `<p><b>Thử nhanh:</b> ${esc(v.thu_nhanh)}${flag(v.thu_nhanh)}</p>` : ""}`;
+    ${v.thu_nhanh ? `<p><b>Thử nhanh:</b> ${esc(v.thu_nhanh)}${flag(v.thu_nhanh)}</p>` : ""}
+    ${ev.kiem_so?.chua_nguon?.length ? `<p class="so-canh"><b>Số chưa có nguồn:</b> ${ev.kiem_so.chua_nguon.map((x) => `<span class="so-co">${esc(x.so)}</span>`).join(", ")}</p>` : ""}`;
+}
+
+// ------------------------------------------------------------- numbers and their sources
+// Every number in the verdict carries a label: đề bài, số liệu (with its source), tính (the arithmetic) or giả định.
+// The server checks them (luat-so.mjs); a number with no source is flagged here, in the PDF and in the phiếu.
+function soLieuHtml(ks) {
+  if (!ks) return "";
+  const canh = ks.chua_nguon?.length
+    ? `<p class="so-canh"><b>${ks.chua_nguon.length} số chưa có nguồn:</b> ${ks.chua_nguon.map((x) => `<span class="so-co">${esc(x.so)}</span> <span class="muted">${esc(x.doan)}</span>`).join(" · ")}</p>`
+    : `<p class="so-ok">Mọi con số trong kết luận đều có nguồn.</p>`;
+  const dong = (ks.so_lieu || []).map((e) => `<li class="${esc(e.trang_thai)}"><b>${esc(e.so)}</b> ${esc(e.y)} <span class="tag">${esc(e.loai)}${e.nguon ? `: ${esc(e.nguon)}` : ""}</span>${e.trang_thai === "khong_thay" ? ' <span class="tag bad">không thấy trong số liệu</span>' : ""}</li>`).join("");
+  return `<div class="v-sec v-so"><h3>Số dùng trong kết luận</h3>${canh}${dong ? `<ul class="so-list">${dong}</ul>` : ""}</div>`;
 }
 
 async function onChairView(ev) {
@@ -1034,6 +1060,34 @@ function showHoi(html) {
   state.hoi.started = true;
 }
 
+/** The secretary speaks one line: her mouth moves, the caption names her. Resolves false if cut off. */
+async function thuKyNoi(text, tag) {
+  $("#caption").hidden = false;
+  $("#caption").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  let done = false;
+  try { done = await speak(THU_KY, text, { tag }); } finally { player.fast = false; }
+  if (done) setSpeaker(null);
+  return done;
+}
+
+/** After the Chair has pinned down the root problem, the secretary reads out the numbers the council
+ * will work from: each fact (its line lights up on the card), what is missing, and any warning. */
+async function thuKyTrinh(d, h) {
+  if (!state.thuKy) return;
+  const nums = d.so_lieu || [];
+  const items = $$(".db-nums li");
+  const con = () => state.hoi === h;
+  if (!(await thuKyNoi(nums.length ? `Thưa hội đồng, tôi trình ${nums.length} số liệu từ thư mục tài liệu của người hỏi.` : "Thưa hội đồng, chưa có số liệu nào từ thư mục tài liệu cho câu hỏi này.", "Thư ký trình số liệu")) || !con()) return;
+  for (let i = 0; i < nums.length; i++) {
+    items.forEach((li, j) => li.classList.toggle("on", j === i));
+    items[i]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!(await thuKyNoi(nums[i].noi_dung, `Số liệu ${i + 1}/${nums.length}`)) || !con()) { items.forEach((li) => li.classList.remove("on")); return; }
+  }
+  items.forEach((li) => li.classList.remove("on"));
+  if ((d.chua_biet || []).length && con()) await thuKyNoi(`Chưa có số: ${d.chua_biet.join("; ")}.`, "Thư ký báo thiếu");
+  if (d.canh_bao && con()) await thuKyNoi(String(d.canh_bao).split(" · ")[0], "Thư ký báo lỗi nguồn");
+}
+
 /** The Chair says a line out loud (mouth and words in step); a click on the caption hurries him. */
 async function chairSpeaks(text, tag) {
   $("#caption").hidden = false;
@@ -1073,11 +1127,13 @@ async function showLuot(luot) {
   h.luot = luot;
   hoiIdle();
   const first = luot.cau_hoi[0]?.hoi;
+  if (luot.nhan_xet_so && state.thuKy) await thuKyNoi(luot.nhan_xet_so, "Thư ký · số liệu");
+  if (state.hoi !== h || h.luot !== luot) return;
   if (first) await chairSpeaks(first, `Lượt ${luot.so}/${MAX_LUOT}`);
   if (state.hoi !== h || h.luot !== luot) return; // dropped, or moved on, while he was talking
   showHoi(`
     <div class="hoi-head"><span class="label">Chủ toạ hỏi</span><span class="hoi-step">Lượt ${luot.so}/${MAX_LUOT}</span></div>
-    ${luot.nhan_xet_so ? `<p class="hoi-note">${esc(luot.nhan_xet_so)}</p>` : ""}
+    ${luot.nhan_xet_so ? `<p class="hoi-note">${state.thuKy ? "<b>Thư ký:</b> " : ""}${esc(luot.nhan_xet_so)}</p>` : ""}
     <ol class="hoi-qs">${luot.cau_hoi.map((q, i) => `
       <li class="hoi-q" data-q="${i}">
         <p class="hoi-ask" id="hq-${i}">${esc(q.hoi)}</p>
@@ -1127,8 +1183,10 @@ function showDeBai(d) {
       <dt>Vấn đề gốc</dt><dd>${esc(d.van_de_goc)}${d.bo_qua_vong_hoi ? ' <span class="tag">bỏ vòng hỏi</span>' : ""}</dd>
       <dt>Nếu phải quyết hôm nay</dt><dd>${esc(d.tra_loi_ban_dau)}</dd>
     </dl>
-    <h4>Số liệu</h4>
+    <h4>Số liệu thư ký trình</h4>
     ${nums.length ? `<ul class="db-nums">${nums.map((x) => `<li>${esc(x.noi_dung)} <span class="src">${esc(x.nguon)}${x.ngay ? ` · ${esc(x.ngay)}` : ""}</span></li>`).join("")}</ul>` : `<p class="db-none">${docHong ? "Chưa có số liệu vì chưa đọc được tài liệu." : "Chưa có số liệu đã kiểm trong tài liệu."}</p>`}
+    ${(d.chua_biet || []).length ? `<p class="db-none"><b>Chưa có số:</b> ${d.chua_biet.map(esc).join("; ")}</p>` : ""}
+    <p class="db-rule">Hội đồng chỉ được dùng số trên đây hoặc phép tính từ chúng; số không có nguồn sẽ bị gắn cờ.</p>
     <h4>Phương án</h4>
     <ol class="db-opts">${opts.map((o) => `<li><span class="id">${esc(o.id)}</span><span>${esc(o.label)}</span></li>`).join("")}</ol>
     <div class="composer-row">
@@ -1185,6 +1243,7 @@ async function hoiChot(vanDeGoc, boQua = false) {
     if (state.hoi !== h) return;
     h.deBai = j.de_bai;
     showDeBai(j.de_bai);
+    thuKyTrinh(j.de_bai, h);
   } catch (e) { hoiFail(e, h); }
 }
 
